@@ -459,6 +459,11 @@ void Optimizer::FullInertialBA(Map *pMap, int its, const bool bFixLocal, const l
                 nNonFixed++;
             VP->setFixed(bFixed);
         }
+        if (pMap->isImuInitialized())
+        {
+            if (pKFi->mnId == pMap->GetInitKFid())
+                VP->setFixed(true);
+        }
         optimizer.addVertex(VP);
 
         if(pKFi->bImu)
