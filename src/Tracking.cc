@@ -1803,7 +1803,22 @@ void Tracking::Track()
                 mVelocity = cv::Mat();
 
             if(mSensor == System::IMU_MONOCULAR || mSensor == System::IMU_STEREO)
+            {
                 mpMapDrawer->SetCurrentCameraPose(mCurrentFrame.mTcw);
+                if(pCurrentMap->isImuInitialized())
+                {
+                    cv::Mat Twb = mCurrentFrame.GetImuPose();
+                    cv::Mat Rwb = Twb.rowRange(0,3).colRange(0,3);
+                    cv::Mat twb = Twb.rowRange(0,3).col(3);
+
+                    vector<float> q = Converter::toQuaternion(Rwb);
+                    mpSystem->outfile << setprecision(19) << mCurrentFrame.mTimeStamp << " " 
+                                        <<  setprecision(9) << twb.at<float>(0) << " " 
+                                        << twb.at<float>(1) << " " 
+                                        << twb.at<float>(2) << " " 
+                                        << q[0] << " " << q[1] << " " << q[2] << " " << q[3] << endl;
+                }
+            }
 
             // Clean VO matches
             for(int i=0; i<mCurrentFrame.N; i++)

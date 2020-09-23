@@ -33,6 +33,11 @@
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>
 
+// #include <string>
+#include <iostream>
+#include <fstream>
+#include <boost/filesystem.hpp>
+
 namespace ORB_SLAM3
 {
 
@@ -217,6 +222,26 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     // Fix verbosity
     Verbose::SetTh(Verbose::VERBOSITY_QUIET);
 
+    // Create folder path to this location if not exists
+    std::string filename = "/home/qn/Desktop/slam_survery/dataset/algorithms/ORB_SLAM3/stamped_traj_estimate.txt";
+    boost::filesystem::path dir(filename.c_str());
+    if(boost::filesystem::create_directories(dir.parent_path())) {
+        printf("Created folder path to output file.\n");
+        printf("Path: %s\n",dir.parent_path().c_str());
+    }
+    // If it exists, then delete it
+    if(boost::filesystem::exists(filename)) {
+        printf("Output file exists, deleting old file....\n");
+        boost::filesystem::remove(filename);
+    }
+    // Open this file we want to write to
+    outfile.open(filename.c_str());
+    if(outfile.fail()) {
+        printf("Unable to open output file!!\n");
+        printf("Path: %s\n",filename.c_str());
+        std::exit(EXIT_FAILURE);
+    }
+    outfile << "# timestamp(s) tx ty tz qx qy qz qw" << std::endl;
 }
 
 cv::Mat System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timestamp, const vector<IMU::Point>& vImuMeas, string filename)
