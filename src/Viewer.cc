@@ -154,6 +154,7 @@ void Viewer::Run()
     pangolin::Var<bool> menuReset("menu.Reset",false,false);
     pangolin::Var<bool> menuStepByStep("menu.Step By Step",false,true);  // false, true
     pangolin::Var<bool> menuStep("menu.Step",false,false);
+    pangolin::Var<bool> menuSavePath("menu.Save Path",false,false);
 
     // Define Camera Render Object (for view / scene browsing)
     pangolin::OpenGlRenderState s_cam(
@@ -244,6 +245,11 @@ void Viewer::Run()
             s_cam.Follow(Ow);
         }
 
+        if (menuSavePath)
+        {
+            mpSystem->SaveTrajectoryEuRoC("/home/qn/Desktop/slam_survery/dataset/algorithms/ORB_SLAM3/path.txt");
+            menuSavePath = false;
+        }
         /*if(menuSideView && mpMapDrawer->mpAtlas->isImuInitialized())
         {
             s_cam.SetProjectionMatrix(pangolin::ProjectionMatrix(1024,768,3000,3000,512,389,0.1,10000));
